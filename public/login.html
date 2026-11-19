@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Império de Viltrum - Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <div class="register-card">
+        <div class="header-section">
+            <div class="omni-badge">
+                <div class="inner-circle"></div>
+            </div>
+            <h1>Identifique-se</h1>
+            <p class="subtitle">Diretrizes de Viltrum</p>
+        </div>
+        
+        <form id="loginForm" onsubmit="fazerLogin(event)">
+            <div class="input-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" required placeholder="seu@email.com">
+            </div>
+            
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn-submit" id="btnLogin">Acessar Terminal</button>
+        </form>
+
+        <p style="text-align: center; color: #9094a6; font-size: 13px; margin: 0;">
+            Não tem cadastro? <a href="index.html" style="color: #ff3333; text-decoration: none; font-weight: bold;">Registrar-se</a>
+        </p>
+    </div>
+
+    <script>
+        async function fazerLogin(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btnLogin');
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            btn.disabled = true;
+            btn.innerText = "Verificando...";
+
+            try {
+                const resposta = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                const dados = await resposta.json();
+
+                if (!resposta.ok) {
+                    alert(dados.erro || "Erro ao fazer login.");
+                    btn.disabled = false;
+                    btn.innerText = "Acessar Terminal";
+                    return;
+                }
+
+                localStorage.setItem('usuarioLogado', dados.usuario);
+                window.location.href = 'chat.html';
+
+            } catch (erro) {
+                console.error("Erro no login:", erro);
+                alert("Falha ao comunicar com o servidor.");
+                btn.disabled = false;
+                btn.innerText = "Acessar Terminal";
+            }
+        }
+    </script>
+</body>
+</html>

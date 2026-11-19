@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Império de Viltrum - Cadastro</title>
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+<body>
+
+    <div class="register-card">
+        <div class="header-section">
+            <div class="omni-badge">
+                <div class="inner-circle"></div>
+            </div>
+            <h1>Acesse o Sistema</h1>
+            <p class="subtitle">Diretrizes de Viltrum</p>
+        </div>
+        
+        <form id="cadastroForm" onsubmit="salvarCadastro(event)">
+            <div class="input-group">
+                <label for="nome">Nome Completo (Usuário)</label>
+                <input type="text" id="nome" required placeholder="Digite seu usuário...">
+            </div>
+            
+            <div class="input-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" required placeholder="seu@email.com">
+            </div>
+            
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" required placeholder="••••••••" minlength="6">
+            </div>
+            
+            <button type="submit" class="btn-submit" id="btnEnviar">Iniciar Transmissão</button>
+        </form>
+
+        <p style="text-align: center; color: #9094a6; font-size: 13px; margin: 0;">
+            Já possui acesso? <a href="login.html" style="color: #ff3333; text-decoration: none; font-weight: bold;">Entrar</a>
+        </p>
+    </div>
+
+    <script>
+        async function salvarCadastro(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btnEnviar');
+            const usuario = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            btn.disabled = true;
+            btn.innerText = "Aguarde...";
+
+            try {
+                const resposta = await fetch('/cadastro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, email, senha })
+                });
+
+                const dados = await resposta.json();
+
+                if (!resposta.ok) {
+                    alert(dados.erro || "Erro ao efetuar o cadastro.");
+                    btn.disabled = false;
+                    btn.innerText = "Iniciar Transmissão";
+                    return;
+                }
+
+                alert(dados.mensagem);
+                window.location.href = 'login.html';
+
+            } catch (erro) {
+                console.error("Erro no cadastro:", erro);
+                alert("Falha ao comunicar com o servidor.");
+                btn.disabled = false;
+                btn.innerText = "Iniciar Transmissão";
+            }
+        }
+    </script>
+</body>
+</html>
